@@ -1,0 +1,243 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>node-pty</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">node-pty</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> node-pty</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="node-pty">node-pty</h1>
+				<p><a href="https://travis-ci.org/Tyriar/node-pty"><img src="https://travis-ci.org/Tyriar/node-pty.svg?branch=master" alt="Travis CI build status"></a>
+				<a href="https://ci.appveyor.com/project/Tyriar/node-pty/branch/master"><img src="https://ci.appveyor.com/api/projects/status/1064dcr2t2r90q4n/branch/master?svg=true" alt="Appveyor build status"></a></p>
+				<p><code>forkpty(3)</code> bindings for node.js. This allows you to fork processes with pseudoterminal file descriptors. It returns a terminal object which allows reads and writes.</p>
+				<p>This is useful for:</p>
+				<ul>
+					<li>Writing a terminal emulator (eg. via <a href="https://github.com/sourcelair/xterm.js">xterm.js</a>).</li>
+					<li>Getting certain programs to <em>think</em> you&#39;re a terminal, such as when you need a program to send you control sequences.</li>
+				</ul>
+				<p><code>node-pty</code> supports Linux, macOS and Windows. Windows support is possible by utilizing the <a href="https://github.com/rprichard/winpty">winpty</a> library.</p>
+				<h2 id="real-world-uses">Real-world Uses</h2>
+				<p><code>node-pty</code> powers many different terminal emulators, including:</p>
+				<ul>
+					<li><a href="https://code.visualstudio.com">Microsoft Visual Studio Code</a></li>
+					<li><a href="https://hyper.is/">Hyper</a></li>
+					<li><a href="https://github.com/railsware/upterm">Upterm</a></li>
+					<li><a href="https://github.com/ioquatix/script-runner">Script Runner</a> for Atom.</li>
+					<li><a href="https://github.com/theia-ide/theia">Theia</a></li>
+					<li><a href="https://github.com/matthew-matvei/freeman">FreeMAN</a> file manager</li>
+					<li><a href="https://atom.io/packages/atom-xterm">atom-xterm</a> - Atom plugin for providing terminals inside your Atom workspace.</li>
+				</ul>
+				<p>Do you use node-pty in your application as well? Please open a <a href="https://github.com/Tyriar/node-pty/pulls">Pull Request</a> to include it here. We would love to have it in our list.</p>
+				<h2 id="example-usage">Example Usage</h2>
+				<pre><code class="lang-js"><span class="hljs-keyword">var</span> os = <span class="hljs-built_in">require</span>(<span class="hljs-string">'os'</span>);
+<span class="hljs-keyword">var</span> pty = <span class="hljs-built_in">require</span>(<span class="hljs-string">'node-pty'</span>);
+
+<span class="hljs-keyword">var</span> shell = os.platform() === <span class="hljs-string">'win32'</span> ? <span class="hljs-string">'powershell.exe'</span> : <span class="hljs-string">'bash'</span>;
+
+<span class="hljs-keyword">var</span> ptyProcess = pty.spawn(shell, [], {
+  <span class="hljs-attr">name</span>: <span class="hljs-string">'xterm-color'</span>,
+  <span class="hljs-attr">cols</span>: <span class="hljs-number">80</span>,
+  <span class="hljs-attr">rows</span>: <span class="hljs-number">30</span>,
+  <span class="hljs-attr">cwd</span>: process.env.HOME,
+  <span class="hljs-attr">env</span>: process.env
+});
+
+ptyProcess.on(<span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(data);
+});
+
+ptyProcess.write(<span class="hljs-string">'ls\r'</span>);
+ptyProcess.resize(<span class="hljs-number">100</span>, <span class="hljs-number">40</span>);
+ptyProcess.write(<span class="hljs-string">'ls\r'</span>);
+</code></pre>
+				<h2 id="building">Building</h2>
+				<pre><code class="lang-bash"><span class="hljs-comment"># Install dependencies and build C++</span>
+npm install
+<span class="hljs-comment"># Compile TypeScript -&gt; JavaScript</span>
+npm run tsc
+</code></pre>
+				<h2 id="api-reference-documentation">API reference documentation</h2>
+				<p>In the previous example <a href="modules/_index_.html#spawn">spawn</a> was called which return an instance of <a href="interfaces/_interfaces_.iterminal.html">ITerminal</a>. </p>
+				<p>This documentation can be generated with the following commands:</p>
+				<pre><code class="lang-sh">npm run doc
+firefox docs/index.html
+</code></pre>
+				<h2 id="debugging">Debugging</h2>
+				<p>On Windows, you can show the winpty agent console window by adding the environment variable <code>WINPTY_SHOW_CONSOLE=1</code> to the pty&#39;s environment. See <a href="https://github.com/rprichard/winpty#debugging-winpty">https://github.com/rprichard/winpty#debugging-winpty</a> for more information.</p>
+				<h2 id="troubleshooting">Troubleshooting</h2>
+				<p><strong>Powershell gives error 8009001d</strong></p>
+				<blockquote>
+					<p>Internal Windows PowerShell error.  Loading managed Windows PowerShell failed with error 8009001d.</p>
+				</blockquote>
+				<p>This happens when PowerShell is launched with no <code>SystemRoot</code> environment variable present.</p>
+				<h2 id="pty-js">pty.js</h2>
+				<p>This project is forked from <a href="https://github.com/chjj/pty.js">chjj/pty.js</a> with the primary goals being to provide better support for later Node.JS versions and Windows.</p>
+				<h2 id="license">License</h2>
+				<p>Copyright (c) 2012-2015, Christopher Jeffrey (MIT License).
+				Copyright (c) 2016, Daniel Imms (MIT License).</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_interfaces_.html">"interfaces"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_terminal_.html">"terminal"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_types_.html">"types"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_unixterminal_.html">"unix<wbr>Terminal"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_utils_.html">"utils"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_windowsptyagent_.html">"windows<wbr>Pty<wbr>Agent"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_windowsterminal_.html">"windows<wbr>Terminal"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
