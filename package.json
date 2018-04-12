@@ -12,15 +12,6 @@
     "type": "git",
     "url": "git://github.com/Tyriar/node-pty.git"
   },
-  "files": [
-    "binding.gyp",
-    "lib/",
-    "scripts/",
-    "src/",
-    "deps/",
-    "typings/",
-    "lib"
-  ],
   "homepage": "https://github.com/Tyriar/node-pty",
   "bugs": {
     "url": "https://github.com/Tyriar/node-pty/issues"
