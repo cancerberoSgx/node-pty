@@ -5,12 +5,9 @@
 import * as assert from 'assert';
 import { WindowsTerminal } from './windowsTerminal';
 import { UnixTerminal } from './unixTerminal';
-<<<<<<< HEAD
 import { Terminal } from './terminal';
 import pollUntil = require('pollUntil');
-=======
 import { spawn } from '.';
->>>>>>> origin/expose-socket
 
 let PlatformTerminal: WindowsTerminal | UnixTerminal;
 if (process.platform === 'win32') {
@@ -34,7 +31,6 @@ describe('Terminal', () => {
     });
   });
 
-<<<<<<< HEAD
 
   describe('write basics',  () => {
 
@@ -101,7 +97,7 @@ describe('Terminal', () => {
 
     it('should emit "drain" event to know when the kernel buffer is free again', function() {
       if (process.platform === 'win32') {
-        this.skip() // 'winpty doesn\'t support "drain" event'
+        this.skip(); // 'winpty doesn\'t support "drain" event'
       }
       else if (shouldEmitDrain) {
         assert.ok(drainEmitted, '"drain" event should be emitted when input to write cannot be flushed entirely');
@@ -111,7 +107,6 @@ describe('Terminal', () => {
       }
     });
   });
-=======
   describe('getSocket', () => {
     it('should return a Socket instance', (done) => {
       const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
@@ -125,5 +120,4 @@ describe('Terminal', () => {
     });
   });
 
->>>>>>> origin/expose-socket
 });
