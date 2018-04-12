@@ -35,8 +35,8 @@
   "scripts": {
     "tsc": "tsc",
     "lint": "tslint src/**/*.ts",
-    "install": "node scripts/install.j",
-    "postinstall": "node scripts/post-install.js; npm install; npm run tsc",
+    "install": "node scripts/install.js",
+    "postinstall": "node scripts/post-install.js; npm install --ignore-scripts ; npm run tsc",
     "test": "cross-env NODE_ENV=test mocha -R spec --exit lib/*.test.js",
     "prepublish": "npm run tsc"
   },
