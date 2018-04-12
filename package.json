@@ -12,6 +12,15 @@
     "type": "git",
     "url": "git://github.com/Tyriar/node-pty.git"
   },
+  "files": [
+    "binding.gyp",
+    "lib/",
+    "scripts/",
+    "src/",
+    "deps/",
+    "lib/",
+    "typings/"
+  ],
   "homepage": "https://github.com/Tyriar/node-pty",
   "bugs": {
     "url": "https://github.com/Tyriar/node-pty/issues"
@@ -28,7 +37,7 @@
     "tsc": "tsc",
     "lint": "tslint src/**/*.ts",
     "install": "node scripts/install.js",
-    "postinstall": "node scripts/post-install.js; npm install --ignore-scripts ; npm run tsc",
+    "postinstall": "node scripts/post-install.js",
     "test": "cross-env NODE_ENV=test mocha -R spec --exit lib/*.test.js",
     "prepublish": "npm run tsc"
   },
