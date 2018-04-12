@@ -1,5 +1,3 @@
-import { Socket } from "net";
-
 /**
  * Copyright (c) 2017, Daniel Imms (MIT License).
  */
@@ -66,10 +64,15 @@ declare module 'node-pty' {
     resize(columns: number, rows: number): void;
 
     /**
-     * Writes data to the pty.
-     * @param data The data to write.
+     * Writes data to the socket.
+     *
+     * Optional parameter `callback` will be called with `true` if the entire data was flushed successfully to the kernel buffer or called with `false` if all or part of the data was queued in user memory. 'drain' event will be emitted when the buffer is again free.
+     *
+     * @param data The data to write. If you want to simulate pressing the ENTER key, like when entering a command, finish the string with the character `'\r'`
+     *
+     * @param callback Function called with true or false as explained in the method description. Take in consideration that this listener could be called several times.
      */
-    write(data: string): void;
+    write(data: string, callback?: (flushed: boolean) => any): void;
 
     /**
      * Kills the pty.
@@ -79,10 +82,5 @@ declare module 'node-pty' {
      * @throws Will throw when signal is used on Windows. 
      */
     kill(signal?: string): void;
-
-    /**
-     * Return the socket this instance is using to communicate with the internal pty. Use at your own risk!
-     */
-    getSocket(): Socket;
   }
 }
