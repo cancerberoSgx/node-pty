@@ -5,8 +5,12 @@
 import * as assert from 'assert';
 import { WindowsTerminal } from './windowsTerminal';
 import { UnixTerminal } from './unixTerminal';
+<<<<<<< HEAD
 import { Terminal } from './terminal';
 import pollUntil = require('pollUntil');
+=======
+import { spawn } from '.';
+>>>>>>> origin/expose-socket
 
 let PlatformTerminal: WindowsTerminal | UnixTerminal;
 if (process.platform === 'win32') {
@@ -30,6 +34,7 @@ describe('Terminal', () => {
     });
   });
 
+<<<<<<< HEAD
 
   describe('write basics',  () => {
 
@@ -106,4 +111,19 @@ describe('Terminal', () => {
       }
     });
   });
+=======
+  describe('getSocket', () => {
+    it('should return a Socket instance', (done) => {
+      const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+      const client = spawn(shell, [], {});
+      assert.equal( client.getSocket().destroyed, false, 'socket shouldn\'t be destroyed yet' );
+      client.destroy();
+      setTimeout(() => { // need to wait a little so the socket get's destroyed in windows
+        assert.equal(client.getSocket().destroyed, true, 'socket should be destroyed');
+        done();
+      }, 100);
+    });
+  });
+
+>>>>>>> origin/expose-socket
 });
