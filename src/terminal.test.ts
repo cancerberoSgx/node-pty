@@ -94,9 +94,9 @@ describe('Terminal', () => {
       });
     }).timeout(4000);
 
-    it('should emit "drain" event to know when the kernel buffer is free again', () => {
+    it('should emit "drain" event to know when the kernel buffer is free again', function() {
       if (process.platform === 'win32') {
-        assert.ok(true, 'winpty doesn\'t support "drain" event');
+        this.skip() // 'winpty doesn\'t support "drain" event'
       }
       else if (shouldEmitDrain) {
         assert.ok(drainEmitted, '"drain" event should be emitted when input to write cannot be flushed entirely');
