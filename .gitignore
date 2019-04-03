@@ -8,3 +8,5 @@ node_modules/
 builderror.log
 npm-debug.log
 package-lock.json
+fixtures/space folder/
+.vscode/settings.json
