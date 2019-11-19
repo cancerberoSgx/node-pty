@@ -8,6 +8,12 @@
  *   with pseudo-terminal file descriptors.
  */
 
+// node versions lower than 10 define this as 0x502 which disables many of the definitions needed to compile
+#include <node_version.h>
+#if NODE_MODULE_VERSION <= 57
+  #define _WIN32_WINNT 0x600
+#endif
+
 #include <iostream>
 #include <nan.h>
 #include <Shlwapi.h> // PathCombine, PathIsRelative
@@ -26,9 +32,9 @@ extern "C" void init(v8::Local<v8::Object>);
   ProcThreadAttributeValue(22, FALSE, TRUE, FALSE)
 
 typedef VOID* HPCON;
-typedef HRESULT (*PFNCREATEPSEUDOCONSOLE)(COORD c, HANDLE hIn, HANDLE hOut, DWORD dwFlags, HPCON* phpcon);
-typedef HRESULT (*PFNRESIZEPSEUDOCONSOLE)(HPCON hpc, COORD newSize);
-typedef void (*PFNCLOSEPSEUDOCONSOLE)(HPCON hpc);
+typedef HRESULT (__stdcall *PFNCREATEPSEUDOCONSOLE)(COORD c, HANDLE hIn, HANDLE hOut, DWORD dwFlags, HPCON* phpcon);
+typedef HRESULT (__stdcall *PFNRESIZEPSEUDOCONSOLE)(HPCON hpc, COORD newSize);
+typedef void (__stdcall *PFNCLOSEPSEUDOCONSOLE)(HPCON hpc);
 
 #endif
 
@@ -160,21 +166,23 @@ static NAN_METHOD(PtyStartProcess) {
   std::unique_ptr<wchar_t[]> mutableCommandline;
   PROCESS_INFORMATION _piClient{};
 
-  if (info.Length() != 5 ||
+  if (info.Length() != 6 ||
       !info[0]->IsString() ||
       !info[1]->IsNumber() ||
       !info[2]->IsNumber() ||
       !info[3]->IsBoolean() ||
-      !info[4]->IsString()) {
-    Nan::ThrowError("Usage: pty.startProcess(file, cols, rows, debug, pipeName)");
+      !info[4]->IsString() ||
+      !info[5]->IsBoolean()) {
+    Nan::ThrowError("Usage: pty.startProcess(file, cols, rows, debug, pipeName, inheritCursor)");
     return;
   }
 
   const std::wstring filename(path_util::to_wstring(Nan::Utf8String(info[0])));
   const SHORT cols = info[1]->Uint32Value(Nan::GetCurrentContext()).FromJust();
   const SHORT rows = info[2]->Uint32Value(Nan::GetCurrentContext()).FromJust();
-  const bool debug = info[3]->ToBoolean(Nan::GetCurrentContext()).ToLocalChecked()->IsTrue();
+  const bool debug = Nan::To<bool>(info[3]).FromJust();
   const std::wstring pipeName(path_util::to_wstring(Nan::Utf8String(info[4])));
+  const bool inheritCursor = Nan::To<bool>(info[5]).FromJust();
 
   // use environment 'Path' variable to determine location of
   // the relative path that we have recieved (e.g cmd.exe)
@@ -196,7 +204,7 @@ static NAN_METHOD(PtyStartProcess) {
 
   HANDLE hIn, hOut;
   HPCON hpc;
-  HRESULT hr = CreateNamedPipesAndPseudoConsole({cols, rows}, 0, &hIn, &hOut, &hpc, inName, outName, pipeName);
+  HRESULT hr = CreateNamedPipesAndPseudoConsole({cols, rows}, inheritCursor ? 1/*PSEUDOCONSOLE_INHERIT_CURSOR*/ : 0, &hIn, &hOut, &hpc, inName, outName, pipeName);
 
   // Restore default handling of ctrl+c
   SetConsoleCtrlHandler(NULL, FALSE);
@@ -312,6 +320,11 @@ static NAN_METHOD(PtyConnect) {
   // Attach the pseudoconsole to the client application we're creating
   STARTUPINFOEXW siEx{0};
   siEx.StartupInfo.cb = sizeof(STARTUPINFOEXW);
+  siEx.StartupInfo.dwFlags |= STARTF_USESTDHANDLES;
+  siEx.StartupInfo.hStdError = nullptr;
+  siEx.StartupInfo.hStdInput = nullptr;
+  siEx.StartupInfo.hStdOutput = nullptr;
+
   SIZE_T size = 0;
   InitializeProcThreadAttributeList(NULL, 1, 0, &size);
   BYTE *attrList = new BYTE[size];

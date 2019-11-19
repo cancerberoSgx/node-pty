@@ -51,7 +51,8 @@ export class WindowsPtyAgent {
     cols: number,
     rows: number,
     debug: boolean,
-    private _useConpty: boolean | undefined
+    private _useConpty: boolean | undefined,
+    conptyInheritCursor: boolean = false
   ) {
     if (this._useConpty === undefined || this._useConpty === true) {
       this._useConpty = this._getWindowsBuildNumber() >= 18309;
@@ -60,16 +61,28 @@ export class WindowsPtyAgent {
       if (!conptyNative) {
         try {
           conptyNative = require('../build/Release/conpty.node');
-        } catch (err) {
-          conptyNative = require('../build/Debug/conpty.node');
+        } catch (outerError) {
+          try {
+            conptyNative = require('../build/Debug/conpty.node');
+          } catch (innerError) {
+            console.error('innerError', innerError);
+            // Re-throw the exception from the Release require if the Debug require fails as well
+            throw outerError;
+          }
         }
       }
     } else {
       if (!winptyNative) {
         try {
           winptyNative = require('../build/Release/pty.node');
-        } catch (err) {
-          winptyNative = require('../build/Debug/pty.node');
+        } catch (outerError) {
+          try {
+            winptyNative = require('../build/Debug/pty.node');
+          } catch (innerError) {
+            console.error('innerError', innerError);
+            // Re-throw the exception from the Release require if the Debug require fails as well
+            throw outerError;
+          }
         }
       }
     }
@@ -84,7 +97,7 @@ export class WindowsPtyAgent {
     // Open pty session.
     let term: IConptyProcess | IWinptyProcess;
     if (this._useConpty) {
-      term = (this._ptyNative as IConptyNative).startProcess(file, cols, rows, debug, this._generatePipeName());
+      term = (this._ptyNative as IConptyNative).startProcess(file, cols, rows, debug, this._generatePipeName(), conptyInheritCursor);
     } else {
       term = (this._ptyNative as IWinptyNative).startProcess(file, commandLine, env, cwd, cols, rows, debug);
       this._pid = (term as IWinptyProcess).pid;
@@ -177,7 +190,6 @@ export class WindowsPtyAgent {
       });
       const timeout = setTimeout(() => {
         // Something went wrong, just send back the shell PID
-        console.error('Could not fetch console process list');
         agent.kill();
         resolve([ this._innerPid ]);
       }, 5000);
